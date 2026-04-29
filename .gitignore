@@ -34,6 +34,9 @@ prefs.json
 *.nfindex
 *.nfindex.json
 
+# Local version manifest (the real one lives on GitHub)
+/version.json
+
 # Claude Code local settings (personal dev config, not for sharing)
 .claude/
 .claude/settings.local.json

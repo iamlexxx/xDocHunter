@@ -50,9 +50,13 @@ public partial class AboutDialog : Window
                 UpdateStatusText.Text = "Could not read version info.";
             }
         }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            UpdateStatusText.Text = "Update info not found. Check back later.";
+        }
         catch
         {
-            UpdateStatusText.Text = "Unable to check — no connection or update server unavailable.";
+            UpdateStatusText.Text = "Unable to check — no connection or server unavailable.";
         }
         finally
         {

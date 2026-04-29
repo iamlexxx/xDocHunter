@@ -7,7 +7,7 @@ namespace xDocHunter.Views;
 
 public partial class AboutDialog : Window
 {
-    // Update check URL — host a JSON file with {"version":"1.x.x"} at this address to enable updates.
+    // Update check URL — host a JSON file with {"version":"1.x.x","description":"What's new"} at this address to enable updates.
     private const string UpdateCheckUrl = "https://raw.githubusercontent.com/iamlexxx/xDocHunter/main/version.json";
 
     private static readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(8) };
@@ -36,7 +36,11 @@ public partial class AboutDialog : Window
             {
                 if (latest > _current)
                 {
-                    UpdateStatusText.Text = $"New version {latest} is available!";
+                    var notes = doc.RootElement.TryGetProperty("description", out var dProp)
+                        ? dProp.GetString() : null;
+                    UpdateStatusText.Text = string.IsNullOrWhiteSpace(notes)
+                        ? $"New version {latest.Major}.{latest.Minor}.{latest.Build} is available!"
+                        : $"New version {latest.Major}.{latest.Minor}.{latest.Build} is available! — {notes}";
                     UpdateStatusText.Foreground = FindResource("PrimaryBrush") as System.Windows.Media.Brush;
                 }
                 else

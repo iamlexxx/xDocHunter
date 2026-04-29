@@ -31,10 +31,14 @@
         </StackPanel>
 
         <!-- Description -->
-        <TextBlock Text="Privacy-first local file search — by name or content."
-                   HorizontalAlignment="Center" TextAlignment="Center"
+        <TextBlock HorizontalAlignment="Center" TextAlignment="Center"
                    FontSize="13" Foreground="{DynamicResource MutedBrush}"
-                   Margin="0,0,0,6"/>
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,6">
+            <Run Text="Privacy-first file search."/>
+            <LineBreak/>
+            <Run Text="Search by name or by content."/>
+        </TextBlock>
 
         <!-- Author + Copyright -->
         <TextBlock Text="By Lex"
@@ -80,7 +84,7 @@
 
         <!-- Close -->
         <Button Content="Close" HorizontalAlignment="Right"
-                Style="{DynamicResource PrimaryButton}"
+                Style="{DynamicResource SecondaryButton}"
                 Click="Close_Click" Padding="24,8"/>
 
     </StackPanel>

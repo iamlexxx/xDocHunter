@@ -41,15 +41,12 @@
             <TextBlock HorizontalAlignment="Center" TextAlignment="Center"
                        FontSize="36" FontWeight="Bold" TextWrapping="Wrap"
                        Foreground="{DynamicResource ForegroundBrush}"
-                       Margin="0,0,0,4">
+                       Margin="0,0,0,16">
                 <Run Text="Hunt down any "/>
                 <Run Text="file" Foreground="{DynamicResource PrimaryBrush}"/>
+                <LineBreak/>
+                <Run Text="on your machine"/>
             </TextBlock>
-            <TextBlock Text="on your machine"
-                       HorizontalAlignment="Center" TextAlignment="Center"
-                       FontSize="36" FontWeight="Bold"
-                       Foreground="{DynamicResource ForegroundBrush}"
-                       Margin="0,0,0,16"/>
 
             <TextBlock TextAlignment="Center" HorizontalAlignment="Center"
                        FontSize="14" TextWrapping="Wrap" MaxWidth="540"
@@ -66,7 +63,7 @@
                         Margin="0,0,12,0">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="/Assets/Icons/folder.png" Width="16" Height="16" Margin="0,0,8,0" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        <TextBlock Text="Scan Folder" VerticalAlignment="Center" Foreground="White"/>
+                        <TextBlock Text="Scan Folder" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
                 <Button Style="{DynamicResource SecondaryButton}"
@@ -151,11 +148,12 @@
 
             <!-- Recent files -->
             <StackPanel Visibility="{Binding HasRecentFiles, Converter={StaticResource BoolToVis}}"
-                        Margin="0,8,0,40" HorizontalAlignment="Stretch">
+                        Margin="0,8,0,40" HorizontalAlignment="Center" MaxWidth="480">
                 <TextBlock Text="Recent Indexes" FontSize="12" FontWeight="SemiBold"
                            Foreground="{DynamicResource SubtleBrush}"
-                           Margin="0,0,0,8" HorizontalAlignment="Left"/>
-                <ItemsControl ItemsSource="{Binding RecentFiles}">
+                           Margin="0,0,0,8" HorizontalAlignment="Center"/>
+                <ItemsControl ItemsSource="{Binding RecentFiles}"
+                              HorizontalContentAlignment="Stretch">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Button Style="{DynamicResource GhostButton}"
@@ -189,11 +187,11 @@
                                     </StackPanel>
                                     <StackPanel Grid.Column="2" Orientation="Horizontal"
                                                 VerticalAlignment="Center" Margin="12,0,0,0">
-                                        <Border Background="#33E53935" CornerRadius="4"
+                                        <Border Background="#33EF4444" CornerRadius="4"
                                                 Padding="5,2" Margin="0,0,8,0"
                                                 Visibility="{Binding Exists, Converter={StaticResource InverseBoolToVis}}">
                                             <TextBlock Text="Not found" FontSize="10"
-                                                       Foreground="#E53935"/>
+                                                       Foreground="{DynamicResource DestructiveBrush}"/>
                                         </Border>
                                         <TextBlock Text="{Binding LastOpened, StringFormat={}{0:MMM d}}"
                                                    FontSize="11"

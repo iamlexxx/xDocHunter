@@ -193,17 +193,15 @@ public sealed class Database : IDisposable
         }
         else if (hasQuery && mode == SearchMode.Filename)
         {
-            // LIKE-based search on name and full_path per token (AND between tokens)
+            // LIKE-based search on name only — matching full_path would surface files whose
+            // parent folder matches the query, which is unexpected in Filename mode.
             var tokens = query!.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
             sb.Append("SELECT id, full_path, name, directory, extension, size_bytes, modified, is_dir FROM files WHERE 1=1");
             for (int ti = 0; ti < tokens.Count(); ti++)
             {
                 var pn = $"$fn{ti}";
-                var pp = $"$fp{ti}";
-                sb.Append($" AND (name LIKE {pn} ESCAPE '|' OR full_path LIKE {pp} ESCAPE '|')");
-                var escaped = "%" + EscapeLike(tokens[ti]) + "%";
-                cmd.Parameters.AddWithValue(pn, escaped);
-                cmd.Parameters.AddWithValue(pp, escaped);
+                sb.Append($" AND name LIKE {pn} ESCAPE '|'");
+                cmd.Parameters.AddWithValue(pn, "%" + EscapeLike(tokens[ti]) + "%");
             }
         }
         else

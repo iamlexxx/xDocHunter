@@ -64,10 +64,7 @@
                                 Padding="8,6"
                                 ToolTip="New Session"
                                 Margin="0,0,4,0">
-                            <StackPanel Orientation="Horizontal">
-                                <Image Source="/Assets/Icons/new.png" Width="16" Height="16" Margin="0,0,6,0" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                <TextBlock Text="New Session" VerticalAlignment="Center" FontSize="12"/>
-                            </StackPanel>
+                            <TextBlock Text="New Session" FontSize="12"/>
                         </Button>
                         <Button Style="{DynamicResource GhostButton}"
                                 Command="{Binding OpenSettingsCommand}"

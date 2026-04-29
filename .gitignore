@@ -1,0 +1,39 @@
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+.vs/
+screenshot/
+
+
+# Publish output
+publish/
+
+# NuGet
+*.nupkg
+packages/
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Logs
+*.log
+
+# Local app data (never commit user index or prefs)
+*.db
+*.db-shm
+*.db-wal
+prefs.json
+
+# Index exports
+*.nfindex
+*.nfindex.json
+
+# Claude Code local settings (personal dev config, not for sharing)
+.claude/
+.claude/settings.local.json

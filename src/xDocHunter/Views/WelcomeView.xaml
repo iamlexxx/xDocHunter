@@ -1,0 +1,263 @@
+﻿<UserControl x:Class="xDocHunter.Views.WelcomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel HorizontalAlignment="Center" MaxWidth="720" Margin="40,60,40,40">
+
+            <!-- Brand -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,48">
+                <Border Background="{DynamicResource PrimarySoftBrush}"
+                        CornerRadius="12" Padding="12" Margin="0,0,14,0">
+                    <Image Source="/Assets/Icons/search.png" Width="28" Height="28" RenderOptions.BitmapScalingMode="HighQuality"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock FontSize="28" FontWeight="Bold">
+                        <Run Text="x" Foreground="{DynamicResource ForegroundBrush}"/><Run Text="DocHunter" Foreground="{DynamicResource PrimaryBrush}"/>
+                    </TextBlock>
+                    <TextBlock Text="Find files by name or search inside documents" FontSize="12"
+                               Foreground="{DynamicResource SubtleBrush}"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Hero -->
+            <TextBlock HorizontalAlignment="Center" TextAlignment="Center"
+                       FontSize="36" FontWeight="Bold" TextWrapping="Wrap"
+                       Foreground="{DynamicResource ForegroundBrush}"
+                       Margin="0,0,0,4">
+                <Run Text="Hunt down any "/>
+                <Run Text="file" Foreground="{DynamicResource PrimaryBrush}"/>
+            </TextBlock>
+            <TextBlock Text="on your machine"
+                       HorizontalAlignment="Center" TextAlignment="Center"
+                       FontSize="36" FontWeight="Bold"
+                       Foreground="{DynamicResource ForegroundBrush}"
+                       Margin="0,0,0,16"/>
+
+            <TextBlock TextAlignment="Center" HorizontalAlignment="Center"
+                       FontSize="14" TextWrapping="Wrap" MaxWidth="540"
+                       Foreground="{DynamicResource MutedBrush}"
+                       Margin="0,0,0,36"
+                       Text="Index your folders once — find any file by name or search inside PDFs, Word docs, spreadsheets, and code. No cloud, no tracking, fully private."/>
+
+            <!-- Action buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+                <Button Style="{DynamicResource PrimaryButton}"
+                        FontSize="14" Padding="24,12"
+                        Command="{Binding ScanCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}"
+                        Margin="0,0,12,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Assets/Icons/folder.png" Width="16" Height="16" Margin="0,0,8,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="Scan Folder" VerticalAlignment="Center" Foreground="White"/>
+                    </StackPanel>
+                </Button>
+                <Button Style="{DynamicResource SecondaryButton}"
+                        FontSize="14" Padding="24,12"
+                        Command="{Binding ImportNfindexCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Assets/Icons/import.png" Width="16" Height="16" Margin="0,0,8,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Text="Load Index" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+            <!-- Scan progress -->
+            <StackPanel Visibility="{Binding IsScanning, Converter={StaticResource BoolToVis}}"
+                        Margin="0,0,0,16" MaxWidth="500" HorizontalAlignment="Center">
+                <Border Background="{DynamicResource CardBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="10"
+                        Padding="20,16">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding StatusText}"
+                                       FontSize="12" Foreground="{DynamicResource MutedBrush}"
+                                       TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding FilesScanned, StringFormat={}{0:N0} files}"
+                                       FontFamily="{DynamicResource MonoFont}"
+                                       FontWeight="SemiBold" FontSize="12"
+                                       Foreground="{DynamicResource PrimaryBrush}"
+                                       Margin="12,0,0,0"/>
+                        </Grid>
+                        <ProgressBar IsIndeterminate="True" Height="8"/>
+                        <Button Content="Cancel"
+                                Style="{DynamicResource GhostButton}"
+                                Command="{Binding CancelCommand}"
+                                HorizontalAlignment="Right"
+                                FontSize="11" Padding="8,4"
+                                Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Import progress -->
+            <StackPanel Visibility="{Binding IsImporting, Converter={StaticResource BoolToVis}}"
+                        Margin="0,0,0,16" MaxWidth="500" HorizontalAlignment="Center">
+                <Border Background="{DynamicResource CardBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="10"
+                        Padding="20,16">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding ImportStatusText}"
+                                       FontSize="12" Foreground="{DynamicResource MutedBrush}"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding ImportPercent, StringFormat={}{0:0}%}"
+                                       FontFamily="{DynamicResource MonoFont}"
+                                       FontWeight="SemiBold" FontSize="12"
+                                       Foreground="{DynamicResource PrimaryBrush}"
+                                       Margin="12,0,0,0"/>
+                        </Grid>
+                        <ProgressBar Minimum="0" Maximum="100"
+                                     Value="{Binding ImportPercent, Mode=OneWay}"
+                                     Height="8"/>
+                        <Button Content="Cancel"
+                                Style="{DynamicResource GhostButton}"
+                                Command="{Binding CancelCommand}"
+                                HorizontalAlignment="Right"
+                                FontSize="11" Padding="8,4"
+                                Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Recent files -->
+            <StackPanel Visibility="{Binding HasRecentFiles, Converter={StaticResource BoolToVis}}"
+                        Margin="0,8,0,40" HorizontalAlignment="Stretch">
+                <TextBlock Text="Recent Indexes" FontSize="12" FontWeight="SemiBold"
+                           Foreground="{DynamicResource SubtleBrush}"
+                           Margin="0,0,0,8" HorizontalAlignment="Left"/>
+                <ItemsControl ItemsSource="{Binding RecentFiles}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{DynamicResource GhostButton}"
+                                    Command="{Binding DataContext.OpenRecentCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}"
+                                    IsEnabled="{Binding Exists}"
+                                    Opacity="{Binding Exists, Converter={StaticResource BoolToOpacity}}"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Stretch"
+                                    Padding="12,8" Margin="0,0,0,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.Column="0" Source="/Assets/Icons/import.png"
+                                           Width="14" Height="14" Margin="0,0,10,0"
+                                           VerticalAlignment="Center"
+                                           RenderOptions.BitmapScalingMode="HighQuality"
+                                           Opacity="0.6"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding FileName}"
+                                                   FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource ForegroundBrush}"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Path}"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource MutedBrush}"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                                VerticalAlignment="Center" Margin="12,0,0,0">
+                                        <Border Background="#33E53935" CornerRadius="4"
+                                                Padding="5,2" Margin="0,0,8,0"
+                                                Visibility="{Binding Exists, Converter={StaticResource InverseBoolToVis}}">
+                                            <TextBlock Text="Not found" FontSize="10"
+                                                       Foreground="#E53935"/>
+                                        </Border>
+                                        <TextBlock Text="{Binding LastOpened, StringFormat={}{0:MMM d}}"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource SubtleBrush}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- Feature cards -->
+            <UniformGrid Columns="3" Margin="0,0,0,48">
+                <!-- Privacy -->
+                <Border Background="{DynamicResource CardBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="12"
+                        Padding="20,24" Margin="6">
+                    <StackPanel>
+                        <Border Background="{DynamicResource PrimarySoftBrush}"
+                                CornerRadius="8" Width="40" Height="40"
+                                HorizontalAlignment="Left" Margin="0,0,0,14">
+                            <Image Source="/Assets/Icons/lock.png" Width="20" Height="20"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        </Border>
+                        <TextBlock Text="Privacy First" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource ForegroundBrush}" Margin="0,0,0,6"/>
+                        <TextBlock Text="Everything runs locally on your machine. No data ever leaves your device."
+                                   FontSize="12" Foreground="{DynamicResource MutedBrush}"
+                                   TextWrapping="Wrap" LineHeight="18"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Speed -->
+                <Border Background="{DynamicResource CardBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="12"
+                        Padding="20,24" Margin="6">
+                    <StackPanel>
+                        <Border Background="{DynamicResource PrimarySoftBrush}"
+                                CornerRadius="8" Width="40" Height="40"
+                                HorizontalAlignment="Left" Margin="0,0,0,14">
+                            <Image Source="/Assets/Icons/lightning.png" Width="20" Height="20"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        </Border>
+                        <TextBlock Text="Filename &amp; Content" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource ForegroundBrush}" Margin="0,0,0,6"/>
+                        <TextBlock Text="Search by filename for blazing speed, or index document contents for full-text search."
+                                   FontSize="12" Foreground="{DynamicResource MutedBrush}"
+                                   TextWrapping="Wrap" LineHeight="18"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Save -->
+                <Border Background="{DynamicResource CardBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="12"
+                        Padding="20,24" Margin="6">
+                    <StackPanel>
+                        <Border Background="{DynamicResource PrimarySoftBrush}"
+                                CornerRadius="8" Width="40" Height="40"
+                                HorizontalAlignment="Left" Margin="0,0,0,14">
+                            <Image Source="/Assets/Icons/save-feature.png" Width="20" Height="20"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        </Border>
+                        <TextBlock Text="Save &amp; Reload" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource ForegroundBrush}" Margin="0,0,0,6"/>
+                        <TextBlock Text="Export your index and load it back anytime. No need to re-scan."
+                                   FontSize="12" Foreground="{DynamicResource MutedBrush}"
+                                   TextWrapping="Wrap" LineHeight="18"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- Footer -->
+            <TextBlock HorizontalAlignment="Center" FontSize="11"
+                       Foreground="{DynamicResource SubtleBrush}">
+                <Run Text="xDocHunter v1.0  •  Privacy-first file search"/>
+            </TextBlock>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

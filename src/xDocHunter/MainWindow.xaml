@@ -1,0 +1,628 @@
+﻿<Window x:Class="xDocHunter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:xDocHunter.ViewModels"
+        xmlns:views="clr-namespace:xDocHunter.Views"
+        xmlns:models="clr-namespace:xDocHunter.Models"
+        Title="xDocHunter"
+        Icon="/Assets/Icons/app-icon.png"
+        Height="760" Width="1240"
+        MinHeight="520" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Background="{DynamicResource BackgroundBrush}"
+        Foreground="{DynamicResource ForegroundBrush}"
+        FontFamily="{DynamicResource UiFont}"
+        FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="ClearType"
+        UseLayoutRounding="True">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Grid>
+        <!-- ================= WELCOME PAGE ================= -->
+        <views:WelcomeView DataContext="{Binding}"
+                           Visibility="{Binding ShowWelcome, Converter={StaticResource BoolToVis}}"/>
+
+        <!-- ================= MAIN APP ================= -->
+        <Grid Visibility="{Binding ShowMain, Converter={StaticResource BoolToVis}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- HEADER -->
+            <Border Grid.Row="0" Background="{DynamicResource SurfaceBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1"
+                    Padding="24,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Background="{DynamicResource PrimarySoftBrush}"
+                                CornerRadius="8" Padding="8" Margin="0,0,10,0">
+                            <Image Source="/Assets/Icons/search.png" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="xDocHunter" FontSize="18" FontWeight="Bold"
+                                       Foreground="{DynamicResource ForegroundBrush}"/>
+                            <TextBlock Text="Find files by name or content"
+                                       FontSize="11" Foreground="{DynamicResource SubtleBrush}"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Style="{DynamicResource GhostButton}"
+                                Command="{Binding ClearCommand}"
+                                Padding="8,6"
+                                ToolTip="New Session"
+                                Margin="0,0,4,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/Assets/Icons/new.png" Width="16" Height="16" Margin="0,0,6,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <TextBlock Text="New Session" VerticalAlignment="Center" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{DynamicResource GhostButton}"
+                                Command="{Binding OpenSettingsCommand}"
+                                Padding="8,6"
+                                ToolTip="Settings"
+                                Margin="0,0,4,0">
+                            <Image Source="/Assets/Icons/setting.png" Width="18" Height="18" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        </Button>
+                        <Button Style="{DynamicResource GhostButton}"
+                                Command="{Binding OpenAboutCommand}"
+                                Padding="8,6"
+                                ToolTip="About xDocHunter">
+                            <Image Source="/Assets/Icons/info.png" Width="18" Height="18" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- CONTENT -->
+            <Grid Grid.Row="1" Margin="24,20,24,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- TOOLBAR + STAT CARDS (single row) -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Toolbar buttons -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button x:Name="SaveIndexButton"
+                                Click="SaveIndexButton_Click"
+                                Margin="0,0,8,0">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource SecondaryButton}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsIndexFromFile}" Value="True">
+                                            <Setter Property="Opacity" Value="1"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Image Source="/Assets/Icons/save-toolbar.png" Width="14" Height="14" Margin="0,0,6,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <TextBlock Text="{Binding SaveButtonLabel}" VerticalAlignment="Center"/>
+                                    <TextBlock Text=" ▾" VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsIndexFromFile}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Button.Content>
+                            <Button.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Save as JSON"
+                                              Command="{Binding SaveIndexJsonCommand}"/>
+                                    <MenuItem Header="Save as SQLite"
+                                              Command="{Binding SaveIndexSqliteCommand}"/>
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                        </Button>
+
+                        <Button Style="{DynamicResource GhostButton}"
+                                Command="{Binding RefreshCommand}"
+                                Margin="0,0,8,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/Assets/Icons/refresh.png" Width="14" Height="14" Margin="0,0,6,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <TextBlock Text="Refresh" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Content="Cancel"
+                                Style="{DynamicResource SecondaryButton}"
+                                Command="{Binding CancelCommand}"
+                                Visibility="{Binding IsScanning, Converter={StaticResource BoolToVis}}"
+                                Margin="0,0,8,0"/>
+                    </StackPanel>
+
+                    <!-- Stat cards -->
+                    <UniformGrid Grid.Column="1" Columns="4" Margin="12,0,0,0">
+                        <Border Style="{DynamicResource Card}" Padding="10,8" Margin="0,0,8,0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                                    <Image Source="/Assets/Icons/file.png" Width="12" Height="12" Margin="0,0,5,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <TextBlock Text="Total Files" FontSize="10"
+                                               Foreground="{DynamicResource MutedBrush}"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding IndexedCount, StringFormat={}{0:N0}}"
+                                           FontFamily="{DynamicResource MonoFont}"
+                                           FontWeight="SemiBold" FontSize="13"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{DynamicResource Card}" Padding="10,8" Margin="0,0,8,0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                                    <Image Source="/Assets/Icons/storage.png" Width="12" Height="12" Margin="0,0,5,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <TextBlock Text="Total Size" FontSize="10"
+                                               Foreground="{DynamicResource MutedBrush}"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding TotalSizeDisplay}"
+                                           FontFamily="{DynamicResource MonoFont}"
+                                           FontWeight="SemiBold" FontSize="13"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{DynamicResource Card}" Padding="10,8" Margin="0,0,8,0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                                    <Image Source="/Assets/Icons/clock.png" Width="12" Height="12" Margin="0,0,5,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <TextBlock Text="Scan Time" FontSize="10"
+                                               Foreground="{DynamicResource MutedBrush}"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding ScanDurationDisplay}"
+                                           FontFamily="{DynamicResource MonoFont}"
+                                           FontWeight="SemiBold" FontSize="13"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{DynamicResource Card}" Padding="10,8">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                                    <Image Source="/Assets/Icons/folder.png" Width="12" Height="12" Margin="0,0,5,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <TextBlock Text="Root" FontSize="10"
+                                               Foreground="{DynamicResource MutedBrush}"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding RootDisplay}"
+                                           FontFamily="{DynamicResource MonoFont}"
+                                           FontWeight="SemiBold" FontSize="11"
+                                           TextTrimming="CharacterEllipsis"
+                                           ToolTip="{Binding RootDisplay}"/>
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+                </Grid>
+
+                <!-- SEARCH + FILTER -->
+                <StackPanel Grid.Row="1">
+                    <Border Background="{DynamicResource CardBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1" CornerRadius="10"
+                            Padding="14" Margin="0,14,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0" Source="/Assets/Icons/search-small.png" Width="16" Height="16"
+                                   VerticalAlignment="Center" Margin="4,0,12,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged, Delay=150}"
+                                     Tag="Search indexed files by name or path…"
+                                     FontFamily="{DynamicResource MonoFont}"
+                                     VerticalContentAlignment="Center"/>
+                            <!-- Clear search button -->
+                            <Button Grid.Column="2"
+                                    Style="{DynamicResource GhostButton}"
+                                    Command="{Binding ClearSearchCommand}"
+                                    Visibility="{Binding HasSearchText, Converter={StaticResource BoolToVis}}"
+                                    Padding="6,4"
+                                    VerticalAlignment="Center" Margin="4,0,0,0"
+                                    ToolTip="Clear search">
+                                <Image Source="/Assets/Icons/clear-search.png" Width="12" Height="12" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </Button>
+                            <!-- Filter by type button -->
+                            <Button Grid.Column="3" x:Name="FilterButton"
+                                    Style="{DynamicResource GhostButton}"
+                                    Click="FilterButton_Click"
+                                    VerticalAlignment="Center" Margin="4,0,0,0"
+                                    Padding="8,4"
+                                    ToolTip="Filter by file type">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="/Assets/Icons/chevron-down.png" Width="12" Height="12" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <TextBlock Text="Filter" FontSize="11" Margin="4,0,0,0"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <Button.ContextMenu>
+                                    <ContextMenu x:Name="FilterMenu"
+                                                 ItemsSource="{Binding ExtensionFilters}"
+                                                 MaxHeight="400">
+                                        <ContextMenu.ItemContainerStyle>
+                                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                <Setter Property="Header" Value="{Binding Display}"/>
+                                                <Setter Property="IsCheckable" Value="True"/>
+                                                <Setter Property="IsChecked" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                                                <Setter Property="StaysOpenOnClick" Value="True"/>
+                                            </Style>
+                                        </ContextMenu.ItemContainerStyle>
+                                    </ContextMenu>
+                                </Button.ContextMenu>
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <!-- Active extension filter indicator -->
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0"
+                                Visibility="{Binding HasExtensionFilter, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="Type filter:" FontSize="11"
+                                   Foreground="{DynamicResource MutedBrush}"
+                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <Border Background="{DynamicResource PrimarySoftBrush}"
+                                CornerRadius="6" Padding="8,4">
+                            <TextBlock Text="{Binding ExtensionFilterDisplay}"
+                                       FontFamily="{DynamicResource MonoFont}"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource PrimaryBrush}"/>
+                        </Border>
+                        <Button Content="Clear"
+                                Style="{DynamicResource GhostButton}"
+                                Command="{Binding ClearExtensionFilterCommand}"
+                                FontSize="11" Padding="8,2" Margin="6,0,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Scan progress card -->
+                <Border Grid.Row="2"
+                        Background="{DynamicResource CardBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="10"
+                        Padding="18,14" Margin="0,14,0,0"
+                        Visibility="{Binding IsScanning, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding StatusText}"
+                                       FontSize="12" Foreground="{DynamicResource MutedBrush}"
+                                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding FilesScanned, StringFormat={}{0:N0} files}"
+                                       FontFamily="{DynamicResource MonoFont}"
+                                       FontWeight="SemiBold" FontSize="13"
+                                       Foreground="{DynamicResource PrimaryBrush}"
+                                       VerticalAlignment="Center" Margin="14,0,0,0"/>
+                            <Button Grid.Column="2" Content="Cancel"
+                                    Style="{DynamicResource GhostButton}"
+                                    Command="{Binding CancelCommand}"
+                                    FontSize="11" Padding="10,4"
+                                    Margin="14,0,0,0"/>
+                        </Grid>
+                        <ProgressBar IsIndeterminate="True" Height="6"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Import progress card -->
+                <Border Grid.Row="2"
+                        Background="{DynamicResource CardBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1" CornerRadius="10"
+                        Padding="18,14" Margin="0,14,0,0"
+                        Visibility="{Binding IsImporting, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding ImportStatusText}"
+                                       FontSize="12" Foreground="{DynamicResource MutedBrush}"
+                                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding ImportPercent, StringFormat={}{0:0}%}"
+                                       FontFamily="{DynamicResource MonoFont}"
+                                       FontWeight="SemiBold" FontSize="13"
+                                       Foreground="{DynamicResource PrimaryBrush}"
+                                       VerticalAlignment="Center" Margin="14,0,0,0"/>
+                            <Button Grid.Column="2" Content="Cancel"
+                                    Style="{DynamicResource GhostButton}"
+                                    Command="{Binding CancelCommand}"
+                                    FontSize="11" Padding="10,4"
+                                    Margin="14,0,0,0"/>
+                        </Grid>
+                        <ProgressBar Minimum="0" Maximum="100"
+                                     Value="{Binding ImportPercent, Mode=OneWay}"
+                                     Height="6"/>
+                    </StackPanel>
+                </Border>
+
+                <Grid Grid.Row="3" Margin="0,14,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition x:Name="TreeColumn" Width="260" MinWidth="180"/>
+                        <ColumnDefinition x:Name="SplitterColumn" Width="Auto"/>
+                        <ColumnDefinition Width="*" MinWidth="320"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- FOLDER TREE SIDEBAR (expanded) -->
+                    <Border Grid.Column="0"
+                            Background="{DynamicResource CardBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1" CornerRadius="10"
+                            Visibility="{Binding ShowTree, Converter={StaticResource BoolToVis}}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" Background="{DynamicResource SurfaceBrush}"
+                                    BorderBrush="{DynamicResource BorderBrush}"
+                                    BorderThickness="0,0,0,1" CornerRadius="10,10,0,0"
+                                    Padding="14,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="FOLDERS"
+                                               FontSize="11" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource MutedBrush}"
+                                               VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1"
+                                            Style="{DynamicResource GhostButton}"
+                                            Command="{Binding ToggleTreeCommand}"
+                                            ToolTip="Collapse folder tree"
+                                            Padding="6,2">
+                                        <Image Source="/Assets/Icons/sidebar-toggle.png" Width="14" Height="14" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                            <TreeView Grid.Row="1"
+                                      x:Name="FolderTreeView"
+                                      ItemsSource="{Binding FolderTree}"
+                                      SelectedItemChanged="FolderTreeView_SelectedItemChanged"
+                                      Background="Transparent"
+                                      BorderThickness="0"
+                                      Padding="6,6,6,10"
+                                      VirtualizingStackPanel.IsVirtualizing="True">
+                                <TreeView.ItemContainerStyle>
+                                    <Style TargetType="TreeViewItem">
+                                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                                        <Setter Property="Padding" Value="2,2"/>
+                                        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                                    </Style>
+                                </TreeView.ItemContainerStyle>
+                                <TreeView.ItemTemplate>
+                                    <HierarchicalDataTemplate DataType="{x:Type models:FolderNode}"
+                                                              ItemsSource="{Binding Children}">
+                                        <Grid Margin="0,1">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Image Grid.Column="0" Source="/Assets/Icons/folder.png" Width="14" Height="14"
+                                                   VerticalAlignment="Center" Margin="0,0,6,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Name}"
+                                                       FontSize="12" VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       ToolTip="{Binding Path}"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding CountDisplay}"
+                                                       FontFamily="{DynamicResource MonoFont}"
+                                                       FontSize="10"
+                                                       VerticalAlignment="Center"
+                                                       Margin="6,0,0,0"
+                                                       Foreground="{DynamicResource SubtleBrush}"/>
+                                        </Grid>
+                                    </HierarchicalDataTemplate>
+                                </TreeView.ItemTemplate>
+                            </TreeView>
+                        </Grid>
+                    </Border>
+
+                    <!-- FOLDER TREE SIDEBAR (collapsed handle) -->
+                    <Button Grid.Column="0"
+                            Style="{DynamicResource SecondaryButton}"
+                            Command="{Binding ToggleTreeCommand}"
+                            ToolTip="Show folder tree"
+                            Width="36" Height="36" Padding="0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Visibility="{Binding ShowTree, Converter={StaticResource InverseBoolToVis}}">
+                        <Image Source="/Assets/Icons/sidebar-toggle.png" Width="14" Height="14" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Button>
+
+                    <!-- DRAG-TO-RESIZE SPLITTER -->
+                    <GridSplitter Grid.Column="1"
+                                  Width="6"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  Background="Transparent"
+                                  ShowsPreview="False"
+                                  ResizeBehavior="PreviousAndNext"
+                                  ResizeDirection="Columns"
+                                  Margin="4,0,4,0"
+                                  Cursor="SizeWE"
+                                  ToolTip="Drag to resize folder tree"
+                                  Visibility="{Binding ShowTree, Converter={StaticResource BoolToVis}}"/>
+
+                    <!-- RESULTS -->
+                    <Grid Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Folder filter indicator -->
+                        <Border Grid.Row="0" Margin="0,0,0,8"
+                                Visibility="{Binding HasFolderFilter, Converter={StaticResource BoolToVis}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Filtering:" FontSize="11"
+                                           Foreground="{DynamicResource MutedBrush}"
+                                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <Border Background="{DynamicResource SecondaryBrush}"
+                                        CornerRadius="6" Padding="8,4">
+                                    <TextBlock Text="{Binding FilterFolderPath}"
+                                               FontFamily="{DynamicResource MonoFont}"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource ForegroundBrush}"/>
+                                </Border>
+                                <Button Content="Clear"
+                                        Style="{DynamicResource GhostButton}"
+                                        Command="{Binding ClearFolderFilterCommand}"
+                                        FontSize="11" Padding="8,2" Margin="6,0,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                    <Border Grid.Row="1"
+                            Background="{DynamicResource CardBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1" CornerRadius="10"
+                            ClipToBounds="True">
+                    <Grid>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Visibility="{Binding HasNoResults, Converter={StaticResource BoolToVis}}">
+                            <Image Source="/Assets/Icons/folder-not-found.png" Width="48" Height="48" HorizontalAlignment="Center"
+                                   Opacity="0.4" Margin="0,0,0,12" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <TextBlock Text="No results"
+                                       FontSize="15" FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource MutedBrush}"/>
+                            <TextBlock Text="Try a different search query."
+                                       FontSize="12" HorizontalAlignment="Center" Margin="0,4,0,0"
+                                       Foreground="{DynamicResource SubtleBrush}"/>
+                        </StackPanel>
+
+                        <DataGrid x:Name="ResultsGrid"
+                                  ItemsSource="{Binding Results}"
+                                  MouseDoubleClick="ResultsGrid_DoubleClick"
+                                  Visibility="{Binding HasResults, Converter={StaticResource BoolToVis}}">
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}"/>
+                            </DataGrid.RowStyle>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="NAME" Binding="{Binding Name}" Width="280"/>
+                                <DataGridTextColumn Header="FULL PATH" Binding="{Binding FullPathDisplay}" Width="*">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontFamily" Value="{DynamicResource MonoFont}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource MutedBrush}"/>
+                                            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                            <Setter Property="ToolTip" Value="{Binding FullPath}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="SIZE" Binding="{Binding SizeDisplay}" Width="100">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontFamily" Value="{DynamicResource MonoFont}"/>
+                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource MutedBrush}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="TYPE" Binding="{Binding TypeDisplay}" Width="90">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontFamily" Value="{DynamicResource MonoFont}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="MODIFIED" Binding="{Binding ModifiedDisplay}" Width="150">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontFamily" Value="{DynamicResource MonoFont}"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource SubtleBrush}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+                    </Grid>
+                </Grid>
+            </Grid>
+
+            <!-- FOOTER -->
+            <Border Grid.Row="2" Background="{DynamicResource SurfaceBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0">
+                <StackPanel>
+                    <!-- Scan progress bar -->
+                    <ProgressBar IsIndeterminate="True" Height="3"
+                                 Visibility="{Binding IsScanning, Converter={StaticResource BoolToVis}}"/>
+                    <!-- Import progress bar -->
+                    <ProgressBar Minimum="0" Maximum="100"
+                                 Value="{Binding ImportPercent, Mode=OneWay}"
+                                 Height="3"
+                                 Visibility="{Binding IsImporting, Converter={StaticResource BoolToVis}}"/>
+                    <Grid Margin="24,8,24,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <Ellipse Width="8" Height="8" VerticalAlignment="Center" Margin="0,0,8,0">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="{DynamicResource SuccessBrush}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsScanning}" Value="True">
+                                                <Setter Property="Fill" Value="{DynamicResource PrimaryBrush}"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsImporting}" Value="True">
+                                                <Setter Property="Fill" Value="{DynamicResource PrimaryBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <TextBlock Text="{Binding StatusText}" Foreground="{DynamicResource MutedBrush}"
+                                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Border Background="{DynamicResource PrimarySoftBrush}"
+                                    CornerRadius="4" Padding="6,2" Margin="0,0,10,0"
+                                    ToolTip="Current search mode">
+                                <TextBlock Text="{Binding SearchModeDisplay}"
+                                           FontFamily="{DynamicResource MonoFont}"
+                                           FontSize="10" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource PrimaryBrush}"/>
+                            </Border>
+                            <TextBlock Text="xDocHunter v1.0"
+                                       Foreground="{DynamicResource SubtleBrush}" FontSize="11"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

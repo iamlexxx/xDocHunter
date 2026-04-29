@@ -1,0 +1,18 @@
+﻿<Application x:Class="xDocHunter.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:xDocHunter"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/LightTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+            <local:InverseBoolConverter x:Key="InverseBool"/>
+            <local:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
+            <local:BoolToOpacityConverter x:Key="BoolToOpacity" FalseValue="0.4"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

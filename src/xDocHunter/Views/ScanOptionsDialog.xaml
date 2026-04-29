@@ -1,0 +1,146 @@
+<Window x:Class="xDocHunter.Views.ScanOptionsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Scan Options"
+        Width="580" Height="720"
+        MinWidth="480" MinHeight="620"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Background="{DynamicResource BackgroundBrush}"
+        Foreground="{DynamicResource ForegroundBrush}"
+        FontFamily="{DynamicResource UiFont}"
+        FontSize="13"
+        UseLayoutRounding="True">
+
+    <Grid Margin="28,24,28,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="16"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Scan options"
+                   FontSize="20" FontWeight="Bold"/>
+
+        <TextBlock Grid.Row="1" Margin="0,4,0,18"
+                   Foreground="{DynamicResource MutedBrush}" FontSize="12"
+                   Text="Choose what to index and how to search it."
+                   TextWrapping="Wrap"/>
+
+        <TextBlock Grid.Row="2" Text="SEARCH MODE"
+                   FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource SubtleBrush}"
+                   Margin="0,0,0,8"/>
+
+        <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0,0,0,18">
+            <RadioButton x:Name="ModeFilenameRadio" GroupName="SearchMode"
+                         Margin="0,0,0,6" Checked="ModeRadio_Changed">
+                <StackPanel>
+                    <TextBlock Text="Search by filename" FontWeight="SemiBold" FontSize="13"/>
+                    <TextBlock Text="Index file names and paths only — fast scan." FontSize="11"
+                               Foreground="{DynamicResource SubtleBrush}" Margin="0,1,0,0"/>
+                </StackPanel>
+            </RadioButton>
+            <RadioButton x:Name="ModeContentRadio" GroupName="SearchMode" Checked="ModeRadio_Changed">
+                <StackPanel>
+                    <TextBlock Text="Search by content" FontWeight="SemiBold" FontSize="13"/>
+                    <TextBlock Text="Extract and index text from PDFs, Office docs, code, and text files — slower scan."
+                               FontSize="11" Foreground="{DynamicResource SubtleBrush}" Margin="0,1,0,0"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </RadioButton>
+        </StackPanel>
+
+        <TextBlock Grid.Row="4" Text="FILE TYPE PRESETS"
+                   FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource SubtleBrush}"
+                   Margin="0,0,0,10"/>
+
+        <ScrollViewer Grid.Row="5" Margin="0,0,0,18"
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <ItemsControl x:Name="PresetsPanel">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border x:Name="PresetCard" Margin="0,0,10,10"
+                            Width="152" Height="70"
+                            CornerRadius="8" Cursor="Hand"
+                            Background="{DynamicResource CardBrush}"
+                            BorderThickness="1.5"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            MouseLeftButtonUp="Preset_Click">
+                        <Grid Margin="12,8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13"/>
+                                <Image x:Name="Checkmark" Source="/Assets/Icons/checkmark.png" Width="12" Height="12"
+                                       Margin="6,0,0,0"
+                                       Visibility="Collapsed" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </StackPanel>
+                            <TextBlock Grid.Row="1" Text="{Binding ExtensionsSummary}"
+                                       FontSize="10.5" Foreground="{DynamicResource SubtleBrush}"
+                                       TextWrapping="Wrap" Margin="0,2,0,0"/>
+                        </Grid>
+                    </Border>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                            <Setter TargetName="PresetCard" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+                            <Setter TargetName="PresetCard" Property="Background" Value="{DynamicResource PrimarySoftBrush}"/>
+                            <Setter TargetName="Checkmark" Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        </ScrollViewer>
+
+        <TextBlock Grid.Row="6" Text="CUSTOM EXTENSIONS"
+                   FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource SubtleBrush}"
+                   Margin="0,0,0,8"/>
+
+        <TextBox Grid.Row="7" x:Name="CustomExtensionsBox"
+                 Tag=".log, .bak, .config"
+                 FontFamily="{DynamicResource MonoFont}"
+                 TextChanged="CustomExtensionsBox_TextChanged"/>
+
+        <TextBlock Grid.Row="8" Text="Comma or space separated. Dot is optional."
+                   FontSize="11" Foreground="{DynamicResource SubtleBrush}" Margin="0,4,0,0"/>
+
+        <Grid Grid.Row="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" x:Name="FilterCountText"
+                       VerticalAlignment="Center"
+                       FontSize="12" Foreground="{DynamicResource MutedBrush}"/>
+
+            <Button Grid.Column="1" Content="Cancel"
+                    Style="{DynamicResource GhostButton}"
+                    Click="Cancel_Click" Margin="0,0,8,0"/>
+            <Button Grid.Column="2" Content="Scan all"
+                    Style="{DynamicResource SecondaryButton}"
+                    Click="ScanAll_Click" Margin="0,0,8,0"/>
+            <Button Grid.Column="3" x:Name="StartScanButton" Content="Start scan"
+                    Style="{DynamicResource PrimaryButton}"
+                    Click="StartScan_Click"/>
+        </Grid>
+    </Grid>
+</Window>

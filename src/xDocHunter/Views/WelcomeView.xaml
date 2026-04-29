@@ -3,7 +3,23 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="{DynamicResource BackgroundBrush}">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <Grid>
+        <!-- Top-right buttons -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,12,16,0" Panel.ZIndex="1">
+            <Button Style="{DynamicResource GhostButton}"
+                    Command="{Binding OpenSettingsCommand}"
+                    Padding="8,6" ToolTip="Settings" Margin="0,0,4,0">
+                <Image Source="/Assets/Icons/setting.png" Width="18" Height="18" RenderOptions.BitmapScalingMode="HighQuality"/>
+            </Button>
+            <Button Style="{DynamicResource GhostButton}"
+                    Command="{Binding OpenAboutCommand}"
+                    Padding="8,6" ToolTip="About xDocHunter">
+                <Image Source="/Assets/Icons/info.png" Width="18" Height="18" RenderOptions.BitmapScalingMode="HighQuality"/>
+            </Button>
+        </StackPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel HorizontalAlignment="Center" MaxWidth="720" Margin="40,60,40,40">
 
             <!-- Brand -->
@@ -260,4 +276,5 @@
             </TextBlock>
         </StackPanel>
     </ScrollViewer>
+    </Grid>
 </UserControl>

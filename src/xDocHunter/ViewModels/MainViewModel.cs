@@ -160,10 +160,6 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
                 var batch = new List<FileEntry>(capacity: 1000);
                 await foreach (var entry in _scanner.ScanAsync(rootPath, filter, progress, _scanCts.Token))
                 {
-                    if (!filter.ScanAll &&
-                        (entry.IsDirectory || !filter.AllowedExtensions.Contains(entry.Extension)))
-                        continue;
-
                     batch.Add(entry);
                     if (batch.Count >= 1000)
                     {
@@ -312,11 +308,13 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             return;
         }
 
-        var dlg = new Views.ConfirmUpdateDialog(_loadedNfindexPath!, _nfindexRootPath!)
+        var optsDlg = new ScanOptionsDialog(CurrentSearchMode)
         {
             Owner = Application.Current.MainWindow
         };
-        if (dlg.ShowDialog() != true) return;
+        if (optsDlg.ShowDialog() != true || optsDlg.Result is null) return;
+        var updateFilter = optsDlg.Result;
+        CurrentSearchMode = updateFilter.Mode;
 
         _scanCts = new CancellationTokenSource();
         IsScanning = true;
@@ -327,6 +325,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         var rootPath = _nfindexRootPath;
         var loadedPath = _loadedNfindexPath;
         var scannedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var modeLabel = updateFilter.Mode == SearchMode.Content ? "content" : "filename";
         StatusText = $"Updating index for {rootPath}...";
 
         try
@@ -334,10 +333,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             var progress = new Progress<ScanProgress>(p =>
             {
                 FilesScanned = p.FilesScanned;
-                StatusText = $"Scanning & extracting text...  {p.CurrentDirectory}";
+                var action = updateFilter.Mode == SearchMode.Content ? "Scanning & extracting text" : "Scanning";
+                StatusText = $"{action}...  {p.CurrentDirectory}";
             });
-
-            var updateFilter = new ScanFilterOptions { Mode = CurrentSearchMode };
             await Task.Run(async () =>
             {
                 var batch = new List<FileEntry>(1000);
@@ -367,7 +365,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             StatusText = "Saving updated index...";
             await _db.SaveAsSqliteAsync(loadedPath, rootPath, ScanDurationSeconds, CurrentSearchMode);
 
-            StatusText = $"Updated. {IndexedCount:N0} items in {ScanDurationSeconds:0.0}s.";
+            StatusText = $"Updated. {IndexedCount:N0} items in {ScanDurationSeconds:0.0}s. ({modeLabel} mode)";
             RefreshResults();
         }
         catch (OperationCanceledException)

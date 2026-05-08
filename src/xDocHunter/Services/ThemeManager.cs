@@ -23,6 +23,7 @@ public static class ThemeManager
     private static bool _trimPathEnabled;
     private static string _trimPathValue = string.Empty;
     private static bool _useBuiltInPdfViewer = true;
+    private static bool _customPdfMouseControls = false;
     private static SearchMode _defaultSearchMode = SearchMode.Filename;
     private static List<RecentIndexFile> _recentFiles = new();
 
@@ -31,6 +32,7 @@ public static class ThemeManager
     public static bool TrimPathEnabled => _trimPathEnabled;
     public static string TrimPathValue => _trimPathValue;
     public static bool UseBuiltInPdfViewer => _useBuiltInPdfViewer;
+    public static bool CustomPdfMouseControls => _customPdfMouseControls;
     public static SearchMode DefaultSearchMode => _defaultSearchMode;
     public static IReadOnlyList<RecentIndexFile> RecentFiles => _recentFiles;
 
@@ -68,6 +70,12 @@ public static class ThemeManager
     public static void SetUseBuiltInPdfViewer(bool enabled)
     {
         _useBuiltInPdfViewer = enabled;
+        SavePrefs();
+    }
+
+    public static void SetCustomPdfMouseControls(bool enabled)
+    {
+        _customPdfMouseControls = enabled;
         SavePrefs();
     }
 
@@ -124,6 +132,8 @@ public static class ThemeManager
                 _trimPathValue = tv.GetString() ?? string.Empty;
             if (doc.RootElement.TryGetProperty("useBuiltInPdfViewer", out var pv))
                 _useBuiltInPdfViewer = pv.GetBoolean();
+            if (doc.RootElement.TryGetProperty("customPdfMouseControls", out var cpm))
+                _customPdfMouseControls = cpm.GetBoolean();
             if (doc.RootElement.TryGetProperty("defaultSearchMode", out var dsm))
                 _defaultSearchMode = dsm.GetString() == "Content" ? SearchMode.Content : SearchMode.Filename;
             if (doc.RootElement.TryGetProperty("recentFiles", out var rf) && rf.ValueKind == JsonValueKind.Array)
@@ -153,6 +163,7 @@ public static class ThemeManager
                 trimPathEnabled = _trimPathEnabled,
                 trimPathValue = _trimPathValue,
                 useBuiltInPdfViewer = _useBuiltInPdfViewer,
+                customPdfMouseControls = _customPdfMouseControls,
                 defaultSearchMode = _defaultSearchMode == SearchMode.Content ? "Content" : "Filename",
                 recentFiles = _recentFiles.Select(r => new { path = r.Path, lastOpened = r.LastOpened })
             });

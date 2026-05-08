@@ -56,25 +56,30 @@ public sealed class FileScanner
                 if (fsi is DirectoryInfo di)
                 {
                     dirQueue.Enqueue(di.FullName);
-                    yield return new FileEntry
-                    {
-                        FullPath = di.FullName,
-                        Name = di.Name,
-                        Directory = di.Parent?.FullName ?? "",
-                        Extension = "",
-                        SizeBytes = 0,
-                        ModifiedUtc = di.LastWriteTimeUtc,
-                        IsDirectory = true
-                    };
+                    if (filter == null || filter.ScanAll)
+                        yield return new FileEntry
+                        {
+                            FullPath = di.FullName,
+                            Name = di.Name,
+                            Directory = di.Parent?.FullName ?? "",
+                            Extension = "",
+                            SizeBytes = 0,
+                            ModifiedUtc = di.LastWriteTimeUtc,
+                            IsDirectory = true
+                        };
                 }
                 else if (fsi is FileInfo fi)
                 {
+                    var ext = fi.Extension.ToLowerInvariant();
+
+                    if (filter != null && !filter.ScanAll && !filter.AllowedExtensions.Contains(ext))
+                        continue;
+
                     long size;
                     DateTime mod;
                     try { size = fi.Length; mod = fi.LastWriteTimeUtc; }
                     catch { size = 0; mod = default; }
 
-                    var ext = fi.Extension.ToLowerInvariant();
                     var extractContent = (filter?.Mode ?? SearchMode.Filename) == SearchMode.Content;
                     var content = extractContent && TextExtractor.IsSupported(ext)
                         ? TextExtractor.Extract(fi.FullName, ext)

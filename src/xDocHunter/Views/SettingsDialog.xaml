@@ -132,6 +132,31 @@
             </Grid>
         </Border>
 
+        <!-- Custom PDF mouse controls toggle -->
+        <Border x:Name="PdfMouseControlsCard"
+                Background="{DynamicResource CardBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="1" CornerRadius="8"
+                Padding="16,12" Margin="0,0,0,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <TextBlock Text="Custom PDF mouse controls" FontWeight="SemiBold" FontSize="13"/>
+                    <TextBlock Text="Left click = zoom in · Right click = zoom out · Middle click = pan mode"
+                               FontSize="11" Foreground="{DynamicResource SubtleBrush}" Margin="0,2,0,0"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+                <CheckBox x:Name="PdfMouseControlsToggle" Grid.Column="1"
+                          VerticalAlignment="Center"
+                          Checked="PdfMouseControlsToggle_Changed"
+                          Unchecked="PdfMouseControlsToggle_Changed"
+                          Style="{DynamicResource ToggleSwitch}"/>
+            </Grid>
+        </Border>
+
         <!-- DISPLAY section -->
         <TextBlock Text="DISPLAY" FontSize="10" FontWeight="SemiBold"
                    Foreground="{DynamicResource SubtleBrush}" Margin="0,16,0,12"/>

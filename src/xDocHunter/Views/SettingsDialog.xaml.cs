@@ -22,6 +22,8 @@ public partial class SettingsDialog : Window
         DarkModeToggle.IsChecked = ThemeManager.IsDark;
         ExpandTreeToggle.IsChecked = ThemeManager.ExpandTreeOnLoad;
         PdfViewerToggle.IsChecked = ThemeManager.UseBuiltInPdfViewer;
+        PdfMouseControlsToggle.IsChecked = ThemeManager.CustomPdfMouseControls;
+        PdfMouseControlsCard.IsEnabled = ThemeManager.UseBuiltInPdfViewer && webView2Available;
         TrimPathToggle.IsChecked = ThemeManager.TrimPathEnabled;
         TrimPathInput.Text = ThemeManager.TrimPathValue;
         TrimPathInput.Visibility = ThemeManager.TrimPathEnabled
@@ -55,7 +57,15 @@ public partial class SettingsDialog : Window
     private void PdfViewerToggle_Changed(object sender, RoutedEventArgs e)
     {
         if (!_initialized) return;
-        ThemeManager.SetUseBuiltInPdfViewer(PdfViewerToggle.IsChecked == true);
+        var enabled = PdfViewerToggle.IsChecked == true;
+        ThemeManager.SetUseBuiltInPdfViewer(enabled);
+        PdfMouseControlsCard.IsEnabled = enabled;
+    }
+
+    private void PdfMouseControlsToggle_Changed(object sender, RoutedEventArgs e)
+    {
+        if (!_initialized) return;
+        ThemeManager.SetCustomPdfMouseControls(PdfMouseControlsToggle.IsChecked == true);
     }
 
     private void TrimPathToggle_Changed(object sender, RoutedEventArgs e)

@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Build
 dotnet build src/xDocHunter/xDocHunter.csproj
 
-# Build and launch (build.bat)
+# Build and launch — kills any running xDocHunter.exe first (build.bat)
 build.bat
 
 # Run
@@ -16,7 +16,16 @@ dotnet run --project src/xDocHunter/xDocHunter.csproj
 
 # Publish self-contained single-file exe
 dotnet publish src/xDocHunter/xDocHunter.csproj -c Release
+
+# Regenerate app-icon.ico from app-icon.png (run from repo root)
+powershell -File tools/make-icon.ps1
 ```
+
+## Versioning
+
+Version is declared in two places — keep them in sync manually:
+- `version.json` — `"version"` field
+- `src/xDocHunter/xDocHunter.csproj` — `<Version>`, `<AssemblyVersion>`, `<FileVersion>`
 
 ## Run tests
 ```bash

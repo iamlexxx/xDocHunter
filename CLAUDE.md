@@ -87,8 +87,7 @@ The current mode is shown as a small badge in the footer (`[FILENAME]` / `[CONTE
 - `Services/TextExtractor.cs` — extracts text from PDF, DOCX, XLSX, PPTX, and 40+ plain-text/code extensions. Max 500k chars per file.
 - `Services/ThemeManager.cs` — dark/light theme + all prefs (incl. `DefaultSearchMode`); persists to `%LocalAppData%/xDocHunter/prefs.json`. Also defines the `RecentIndexFile` record.
 - `Views/AboutDialog.xaml` — app version/credits dialog
-- `Views/ConfirmUpdateDialog.xaml` — shown when user re-scans a folder already in the index
-- `Views/ScanOptionsDialog.xaml` — search-mode radio group at top, file-type presets, custom extensions
+- `Views/ScanOptionsDialog.xaml` — search-mode radio group at top, file-type presets, custom extensions; also used in update-index flow (replaced ConfirmUpdateDialog)
 - `Views/SettingsDialog.xaml` — all togglable settings + default search mode
 - `Views/WelcomeView.xaml` — landing page
 - `Views/PdfViewerWindow.xaml` — in-app WebView2-backed PDF viewer (read-only)
@@ -112,6 +111,8 @@ Two complete ResourceDictionary files (`Themes/DarkTheme.xaml`, `Themes/LightThe
 
 `.pdf` results open inside the app via `Views/PdfViewerWindow`, which hosts a `Microsoft.Web.WebView2.Wpf.WebView2` control. Gated by the `UseBuiltInPdfViewer` pref (default **on**). Falls back to shell-execute if WebView2 is unavailable.
 
+When **Custom PDF mouse controls** is enabled (`customPdfMouseControls` pref), `PdfViewerWindow` installs a `WH_MOUSE_LL` low-level mouse hook that intercepts clicks over the WebView2 area: left click = zoom in, right click = zoom out, middle click = enter/exit pan mode (scrolls via `SendInput` fired on a thread-pool thread to avoid hook re-entrancy deadlock). The WebView2 bounds are cached by a 150 ms `DispatcherTimer` to avoid calling `PointToScreen` from the hook callback. The hook is installed after `EnsureCoreWebView2Async` completes and removed on window close.
+
 ### Settings (ThemeManager prefs)
 
 | Key | Default | Description |
@@ -121,6 +122,7 @@ Two complete ResourceDictionary files (`Themes/DarkTheme.xaml`, `Themes/LightThe
 | `includeFilenameInSearch` | `true` | In Content mode, also matches against `name` (FTS5) |
 | `defaultSearchMode` | `Filename` | Pre-selected mode in ScanOptionsDialog |
 | `useBuiltInPdfViewer` | `true` | Open PDFs in WebView2 viewer |
+| `customPdfMouseControls` | `false` | Enable custom mouse bindings in PDF viewer (zoom/pan); disabled when viewer is off |
 | `trimPathEnabled` | `false` | Strip a prefix from displayed paths |
 | `trimPathValue` | `""` | The prefix to strip |
 
